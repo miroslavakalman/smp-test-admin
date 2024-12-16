@@ -8,13 +8,12 @@
 </head>
 <body>
     <nav>
-        <img src="img/smp-logo.png" alt="Логотип SMP Esports">
-        <button class="object-choice">Дубровка <img src="img/arrow.svg" alt=""></button>
+    <img src="{{ asset('img/smp-logo.png') }}" alt="Логотип SMP Esports">
+    <button class="object-choice">Дубровка <img src="img/arrow.svg" alt=""></button>
         <button class="end-session">Выйти</button>
     </nav>
-    <h1>Управление бронированиями. <br><span class="object-name">Дубровка</span></h1>  <!-- задел под разные объекты -->
-    <div class="filter-by-date">
-            
-    </div>
+    <main>
+    @yield('content')
+    </main>
 </body>
 </html>
