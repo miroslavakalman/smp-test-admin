@@ -9,7 +9,7 @@
 <body>
     <nav>
     <img src="{{ asset('img/smp-logo.png') }}" alt="Логотип SMP Esports">
-    <button class="object-choice">Дубровка <img src="{{ asset('img/arrow.svg') }}" alt=""></button>
+    <!-- <button class="object-choice">Дубровка <img src="{{ asset('img/arrow.svg') }}" alt=""></button> -->
     <p><a class="href-shifts" href="https://google.com">Смены</a></p>
     <button class="end-session">Выйти</button>
     </nav>
