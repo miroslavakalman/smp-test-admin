@@ -2,9 +2,10 @@
 
 @section('content')
 <h1>Создать новую запись</h1>
-
+<div class="form-wrapping">
 <form action="{{ route('clubs.bookings.store', $club->id) }}" method="POST">
     @csrf
+    
     <label>Имя посетителя:</label>
     <input type="text" name="visitor_name" required>
 
@@ -19,8 +20,11 @@
 
     <label>Продолжительность (часы):</label>
     <input type="number" name="duration" required>
+    <br>
+    <button class="shift" type="submit">Создать</button>
+    <a class="href-back" href="{{ route('welcome') }}">Назад</a>
 
-    <button type="submit">Создать запись</button>
 </form>
 
+</div>
 @endsection

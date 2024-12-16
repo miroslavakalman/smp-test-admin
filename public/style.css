@@ -7,10 +7,14 @@ body{
     padding-right: 10%;
 }
 
-a{
+.href-shifts{
     color: white;
     font-size: 24px;
+}
+
+a{
     text-decoration: none;
+    color: white;
 }
 button{
     font-family: 'Montserrat';
@@ -67,11 +71,11 @@ h1{
 .sort-by-period{
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 14px;
     font-weight: 400;
     font-size: 20px;
     color: #fff;
-    align-items: center;
 }
 
 
@@ -83,6 +87,7 @@ h1{
     height: 33px;
     background: none;
     color: white;
+    margin-top: 10px;
 }
 
 .other-buttons{
@@ -141,4 +146,29 @@ th {
 .actions i {
     margin: 0 5px;
     cursor: pointer;
+}
+
+form{
+    color: white;
+}
+
+form label {
+    margin-bottom: 0.5rem;
+    width: 100%;
+    display: block;
+    font-size: 20px;
+}
+
+form input {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    box-sizing: border-box; 
+    outline: none;
+    border-radius: 10px;
+    width: 220px;
+}
+
+
+.href-back{
+    font-size: 20px;    
 }
