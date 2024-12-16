@@ -38,4 +38,23 @@ class BookingController extends Controller
         return redirect()->route('welcome')->with('success', 'Бронирование обновлено');
     }
 
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'visitor_name' => 'required|max:255',
+            'phone' => 'required',
+            'email' => 'required|email',
+            'booking_date' => 'required|date',
+            'quantity' => 'required|integer',
+            'duration' => 'required|integer',
+        ]);
+    
+        Booking::create($validated); // Сохраняем данные в базу
+        return redirect()->route('welcome')->with('success', 'Бронирование успешно создано.'); // Перенаправляем обратно на список броней
+    }
+    public function create()
+    {
+        return view('create'); // Указываем только имя файла без папки
+    }
+    
 }

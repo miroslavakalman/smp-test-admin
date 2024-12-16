@@ -132,9 +132,7 @@ td{
 th {
     background-color: white;
 }
-tr:nth-child(even) {
-    background-color: white;
-}
+
 .actions i {
     margin: 0 5px;
     cursor: pointer;

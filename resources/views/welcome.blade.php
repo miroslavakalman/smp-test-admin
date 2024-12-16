@@ -5,7 +5,11 @@
     <div class="other-buttons">
         <button class="shift">На смене</button>
         <button class="booking-scheme">График броней</button>
-        <button class="booking-scheme">Создать запись</button>
+        <button class="booking-scheme">
+    <a href="{{ route('bookings.create') }}" style="color: inherit; text-decoration: none;">Создать запись</a>
+</button>
+
+
     </div>
     <div class="filter-by-date">
         <button class="all-time">За все время</button>
