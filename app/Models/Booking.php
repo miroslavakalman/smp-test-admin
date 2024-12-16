@@ -10,10 +10,14 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
-        'visitor_name',
-        'phone',
-        'booking_date',
-        'quantity',
-        'duration'
+        'visitor_name', 'phone', 'booking_date', 'quantity', 'duration', 'club_id',
     ];
+
+    /**
+     * Связь с клубом (бронирование принадлежит одному клубу)
+     */
+    public function club()
+    {
+        return $this->belongsTo(Club::class);
+    }
 }
