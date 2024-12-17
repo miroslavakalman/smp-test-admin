@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ-панель</title>
+    <title>Запись</title>
     <link rel="stylesheet" href="{{ asset('style.css') }}">
 </head>
 <body>
@@ -12,7 +12,6 @@
         <img src="{{ asset('img/smp-logo.png') }}" alt="Логотип SMP Esports">
     </a>
     <!-- <button class="object-choice">Дубровка <img src="{{ asset('img/arrow.svg') }}" alt=""></button> -->
-    <p><a class="href-shifts" href="https://google.com">Смены</a></p>
     <button class="end-session">Выйти</button>
     </nav>
     <main>

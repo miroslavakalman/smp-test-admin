@@ -13,7 +13,7 @@
     <input type="text" name="phone" required>
 
     <label>Дата бронирования:</label>
-    <input type="datetime-local" name="booking_date" required>
+    <input type="datetime-local" name="booking_date" min="{{ now()->format('Y-m-d\TH:i') }}" step="900" required>
 
     <label>Количество:</label>
     <input type="number" name="quantity" required>

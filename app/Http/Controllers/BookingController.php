@@ -105,4 +105,39 @@ class BookingController extends Controller
         $club = Club::findOrFail($club_id);
         return view('create', compact('club')); // Отправляем клуб в форму
     }
+
+    public function clientCreate($club_id)
+{
+    $club = Club::findOrFail($club_id); // Ищем клуб по ID
+    return view('clients.bookings.create', compact('club')); // Используем новое представление
+}
+
+    public function clientStore(Request $request, $club_id)
+    {
+        $club = Club::findOrFail($club_id);
+
+        $validated = $request->validate([
+            'visitor_name' => 'required|max:255',
+            'phone' => 'required',
+            'booking_date' => 'required|date',
+            'in_club_status' => 'required|in:yes,no',
+            'quantity' => 'required|integer|min:1',
+            'duration' => 'required|integer|min:1',
+        ]);
+        if ($validated['in_club_status'] === 'yes') {
+            $validated['booking_date'] = now();
+        }
+
+        $club->bookings()->create($validated);
+
+        return redirect()->route('client.bookings.thankyou')->with('success', 'Бронирование успешно создано!');
+    }
+
+    public function main()
+    {
+        $clubs = Club::all(); 
+        return view('main', compact('clubs')); 
+    }
+
+
 }
