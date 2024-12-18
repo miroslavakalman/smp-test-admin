@@ -9,11 +9,8 @@ class Club extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'pc_count', 'opening_time', 'closing_time'];
 
-    /**
-     * Связь с бронированиями (один клуб имеет много бронирований)
-     */
     public function bookings()
     {
         return $this->hasMany(Booking::class);

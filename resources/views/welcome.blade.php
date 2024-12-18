@@ -29,6 +29,22 @@
         </div>
     </div>
 </form>
+<!-- <div class="update-section">
+    <h3>Изменить количество ПК и время</h3>
+    <form action="{{ route('bookings.update-all', ['club' => $selectedClub->id]) }}" method="POST">
+        @csrf
+        @method('PATCH')
+        <div>
+            <label for="quantity">Количество ПК:</label>
+            <input type="number" name="quantity" id="quantity" value="{{ old('quantity') }}" min="1" style="width: 100px;">
+        </div>
+        <div>
+            <label for="duration">Время (ч):</label>
+            <input type="number" name="duration" id="duration" value="{{ old('duration') }}" min="1" style="width: 100px;">
+        </div>
+        <button type="submit" class="save-btn">Сохранить изменения</button>
+    </form>
+</div> -->
 
 <table>
     <thead>

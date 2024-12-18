@@ -7,6 +7,7 @@ Route::prefix('client/clubs/{club_id}/bookings')->group(function () {
     Route::get('/create', [BookingController::class, 'clientCreate'])->name('client.bookings.create');
     Route::post('/', [BookingController::class, 'clientStore'])->name('client.bookings.store');
 });
+Route::patch('/clubs/{club}/bookings/update-all', [BookingController::class, 'updateAll'])->name('bookings.update-all');
 
 Route::get('/thank-you', function () {
     return view('clients.bookings.thankyou'); 

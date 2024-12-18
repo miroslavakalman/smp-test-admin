@@ -5,9 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Club;
 use Illuminate\Http\Request;
-
+use Carbon\Carbon;
 class BookingController extends Controller
 {
+    public function checkBookingLimit(Request $request, $clubId)
+{
+    $bookingDate = Carbon::parse($request->input('booking_date'));
+    $club = Club::find($clubId);
+
+    // Check existing bookings for the same time range
+    $existingBookings = Booking::where('club_id', $clubId)
+        ->where('booking_date', $bookingDate->format('Y-m-d H:i:s'))
+        ->count();
+
+    if ($existingBookings >= $club->pc_count) {
+        return response()->json(['error' => 'В это время нет свободных симуляторов']);
+    }
+
+    return response()->json(['success' => 'Симуляторы доступны']);
+}
+    public function updateAll(Request $request, $clubId)
+{
+    $request->validate([
+        'quantity' => 'required|integer|min:1',
+        'duration' => 'required|integer|min:1',
+    ]);
+
+    Booking::where('club_id', $clubId)->update([
+        'quantity' => $request->quantity,
+        'duration' => $request->duration,
+    ]);
+
+    return redirect()->back()->with('success', 'Изменения успешно сохранены.');
+}
+
     public function index(Request $request)
     {
         $clubId = $request->input('club', Club::first()->id);  
@@ -26,7 +57,7 @@ class BookingController extends Controller
             })
             ->get()
             ->map(function ($booking) {
-                $booking->formatted_date = \Carbon\Carbon::parse($booking->booking_date)->translatedFormat('d F Y, H:i');
+                $booking->formatted_date = Carbon::parse($booking->booking_date)->translatedFormat('d F Y, H:i');
                 return $booking;
             });
     
