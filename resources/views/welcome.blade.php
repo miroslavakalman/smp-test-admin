@@ -33,22 +33,34 @@
 <table>
     <thead>
         <tr>
-            <th>id</th>
-            <th>ФИО посетителя</th>
-            <th>Номер телефона</th>
-            <th>Дата бронирования</th>
-            <th>Количество</th>
-            <th>Время</th>
+            <th style="width: 80px;">ID
+                <input style="width: 80px;" type="text" name="filter_id" placeholder="Поиск" value="{{ request('filter_id') }}" onkeyup="filterTable()">
+            </th>
+            <th>ФИО посетителя
+                <input style="width: 100%;" type="text" name="filter_name" placeholder="Поиск" value="{{ request('filter_name') }}" onkeyup="filterTable()">
+            </th>
+            <th>Номер телефона
+                <input type="text" name="filter_phone" placeholder="Поиск" value="{{ request('filter_phone') }}" onkeyup="filterTable()">
+            </th>
+            <th >Дата бронирования
+                <input type="text" name="filter_date" placeholder="Поиск" value="{{ request('filter_date') }}" onkeyup="filterTable()">
+            </th>
+            <th style="width: 100px;">Количество
+                <input style="width: 80px;" type="text" name="filter_quantity" placeholder="Поиск" value="{{ request('filter_quantity') }}" onkeyup="filterTable()">
+            </th>
+            <th style="width: 80px;">Время
+                <input style="width: 80px;"type="text" name="filter_time" placeholder="Поиск" value="{{ request('filter_time') }}" onkeyup="filterTable()">
+            </th>
             <th>Действия</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="booking-table">
         @foreach($bookings as $booking)
             <tr>
                 <td>{{ $booking->id }}</td>
                 <td>{{ $booking->visitor_name }}</td>
                 <td>{{ $booking->phone }}</td>
-                <td>{{ \Carbon\Carbon::parse($booking->booking_date)->format('d F Y, H:i') }}</td>
+                <td>{{ $booking->formatted_date }}</td>
                 <td>{{ $booking->quantity }}</td>
                 <td>{{ $booking->duration }} часа</td>
                 <td>
@@ -75,19 +87,41 @@
 @endsection
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const dateInputs = document.querySelectorAll('#start-date, #finish-date');
+    function filterTable() {
+        const table = document.getElementById('booking-table');
+        const rows = table.getElementsByTagName('tr');
+        const filters = {
+            id: document.querySelector('input[name="filter_id"]').value.toLowerCase(),
+            name: document.querySelector('input[name="filter_name"]').value.toLowerCase(),
+            phone: document.querySelector('input[name="filter_phone"]').value.toLowerCase(),
+            date: document.querySelector('input[name="filter_date"]').value.toLowerCase(),
+            quantity: document.querySelector('input[name="filter_quantity"]').value.toLowerCase(),
+            time: document.querySelector('input[name="filter_time"]').value.toLowerCase(),
+        };
 
-        dateInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                document.getElementById('date-filter-form').submit();
-            });
+        Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            if (cells.length) {
+                const id = cells[0].innerText.toLowerCase();
+                const name = cells[1].innerText.toLowerCase();
+                const phone = cells[2].innerText.toLowerCase();
+                const date = cells[3].innerText.toLowerCase();
+                const quantity = cells[4].innerText.toLowerCase();
+                const time = cells[5].innerText.toLowerCase();
+
+                if (
+                    (filters.id && !id.includes(filters.id)) ||
+                    (filters.name && !name.includes(filters.name)) ||
+                    (filters.phone && !phone.includes(filters.phone)) ||
+                    (filters.date && !date.includes(filters.date)) ||
+                    (filters.quantity && !quantity.includes(filters.quantity)) ||
+                    (filters.time && !time.includes(filters.time))
+                ) {
+                    row.style.display = 'none';
+                } else {
+                    row.style.display = '';
+                }
+            }
         });
-    });
-
-    function clearAllTime() {
-        document.getElementById('start-date').value = '';
-        document.getElementById('finish-date').value = '';
-        document.getElementById('date-filter-form').submit();
     }
 </script>

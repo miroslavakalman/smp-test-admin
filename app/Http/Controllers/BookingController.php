@@ -19,30 +19,28 @@ class BookingController extends Controller
     
         $start_date = $request->input('start_date');
         $finish_date = $request->input('finish_date');
-        if ($request->filled('all-time')) {
-            $bookings = Booking::where('club_id', $selectedClub->id)->get();
-        } else {
-            $bookings = Booking::where('club_id', $selectedClub->id)
-                ->whereBetween('booking_date', [$start_date, $finish_date])
-                ->get();
-        }
+    
+        $bookings = Booking::where('club_id', $selectedClub->id)
+            ->when(!$request->filled('all-time'), function ($query) use ($start_date, $finish_date) {
+                $query->whereBetween('booking_date', [$start_date, $finish_date]);
+            })
+            ->get()
+            ->map(function ($booking) {
+                $booking->formatted_date = \Carbon\Carbon::parse($booking->booking_date)->translatedFormat('d F Y, H:i');
+                return $booking;
+            });
     
         return view('welcome', [
             'bookings' => $bookings,
-            'clubs' => Club::all(), // Для фильтрации клубов
-            'selectedClub' => $selectedClub, // Выбранный клуб
+            'clubs' => Club::all(),
+            'selectedClub' => $selectedClub, 
         ]);
     }
     
     public function show($clubId, $id)
     {
-        // Найдем клуб по его ID
         $club = Club::findOrFail($clubId);
-
-        // Найдем бронирование по ID
         $booking = Booking::findOrFail($id);
-
-        // Отправим данные в представление
         return view('bookings.show', compact('club', 'booking'));
     }
 
@@ -95,7 +93,7 @@ class BookingController extends Controller
             'duration' => 'required|integer',
         ]);
 
-        $club->bookings()->create($validated); // Привязываем запись к клубу
+        $club->bookings()->create($validated); 
 
         return redirect()->route('clubs.bookings.index', $club_id)->with('success', 'Запись создана.');
     }
@@ -103,14 +101,14 @@ class BookingController extends Controller
     public function create($club_id)
     {
         $club = Club::findOrFail($club_id);
-        return view('create', compact('club')); // Отправляем клуб в форму
+        return view('create', compact('club'));
     }
 
     public function clientCreate($club_id)
-{
-    $club = Club::findOrFail($club_id); // Ищем клуб по ID
-    return view('clients.bookings.create', compact('club')); // Используем новое представление
-}
+    {
+        $club = Club::findOrFail($club_id); 
+        return view('clients.bookings.create', compact('club')); 
+    }
 
     public function clientStore(Request $request, $club_id)
     {
