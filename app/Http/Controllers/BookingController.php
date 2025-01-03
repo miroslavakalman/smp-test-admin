@@ -14,9 +14,10 @@ class BookingController extends Controller
         $bookingDate = Carbon::parse($request->input('booking_date'));
         $club = Club::find($clubId);
 
-        // Check existing bookings for the same time range
+        // Формируем время для поиска бронирований с точным временем
         $existingBookings = Booking::where('club_id', $clubId)
-            ->where('booking_date', $bookingDate->format('Y-m-d H:i:s'))
+            ->whereDate('booking_date', $bookingDate->toDateString())
+            ->whereTime('booking_time', $bookingDate->toTimeString())
             ->count();
 
         if ($existingBookings >= $club->pc_count) {
@@ -113,6 +114,7 @@ class BookingController extends Controller
         return redirect()->route('clubs.bookings.index', $club->id)
             ->with('success', 'Бронирование обновлено');
     }
+
     public function store(Request $request, $clubId)
     {
         // Валидация входных данных
@@ -145,8 +147,8 @@ class BookingController extends Controller
             'visitor_name' => $request->visitor_name,
             'phone' => $request->phone,
             'in_club_status' => $request->in_club_status,
-            'booking_date' => $request->booking_date,
-            'booking_time' => $request->booking_time,
+            'booking_date' => $bookingDateTime->toDateString(),
+            'booking_time' => $bookingDateTime->toTimeString(),
             'quantity' => $request->quantity,
             'sim_setup' => $request->sim_setup,
         ]);
@@ -154,18 +156,18 @@ class BookingController extends Controller
         return redirect()->route('client.bookings.index', $clubId)
             ->with('success', 'Бронирование успешно создано.');
     }
+
     public function checkBooking(Request $request)
-{
-    $bookingDate = Carbon::parse($request->input('date'));
-    $bookingTime = $request->input('time');
+    {
+        $bookingDate = Carbon::parse($request->input('date'));
+        $bookingTime = $request->input('time');
 
-    $existingBookings = Booking::whereDate('booking_date', $bookingDate->format('Y-m-d'))
-        ->where('booking_time', $bookingTime)
-        ->count();
+        $existingBookings = Booking::whereDate('booking_date', $bookingDate->format('Y-m-d'))
+            ->where('booking_time', $bookingTime)
+            ->count();
 
-    return response()->json(['isOccupied' => $existingBookings > 0]);
-}
-
+        return response()->json(['isOccupied' => $existingBookings > 0]);
+    }
 
     public function create($club_id)
     {

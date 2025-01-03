@@ -29,22 +29,7 @@
         </div>
     </div>
 </form>
-<!-- <div class="update-section">
-    <h3>Изменить количество ПК и время</h3>
-    <form action="{{ route('bookings.update-all', ['club' => $selectedClub->id]) }}" method="POST">
-        @csrf
-        @method('PATCH')
-        <div>
-            <label for="quantity">Количество ПК:</label>
-            <input type="number" name="quantity" id="quantity" value="{{ old('quantity') }}" min="1" style="width: 100px;">
-        </div>
-        <div>
-            <label for="duration">Время (ч):</label>
-            <input type="number" name="duration" id="duration" value="{{ old('duration') }}" min="1" style="width: 100px;">
-        </div>
-        <button type="submit" class="save-btn">Сохранить изменения</button>
-    </form>
-</div> -->
+
 
 <table>
     <thead>
@@ -60,6 +45,8 @@
             </th>
             <th >Дата бронирования
                 <input type="text" name="filter_date" placeholder="Поиск" value="{{ request('filter_date') }}" onkeyup="filterTable()">
+            </th>
+            <th >Кокпит
             </th>
             <th style="width: 100px;">Количество
                 <input style="width: 80px;" type="text" name="filter_quantity" placeholder="Поиск" value="{{ request('filter_quantity') }}" onkeyup="filterTable()">
@@ -77,6 +64,9 @@
                 <td>{{ $booking->visitor_name }}</td>
                 <td>{{ $booking->phone }}</td>
                 <td>{{ $booking->formatted_date }}</td>
+                <td>
+                    {{ $booking->sim_setup == 'yes' ? 'Дрифт' : 'Обычный' }}
+                </td>
                 <td>{{ $booking->quantity }}</td>
                 <td>{{ $booking->duration }} часа</td>
                 <td>

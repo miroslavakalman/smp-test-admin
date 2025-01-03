@@ -34,8 +34,8 @@
 
                 <h3>Выберите время:</h3>
                 <div id="time-slots" class="time-slots-grid"></div>
-                <input type="hidden" id="selected-time" name="booking_time" required>
-            </div>
+                <input type="hidden" id="booking_time" name="booking_time" required>
+                </div>
 
             <label for="booking-time">Тариф по времени:</label>
             <select id="booking-time" name="booking-time" required>
@@ -74,59 +74,68 @@
 </form>
 
 <script>
-    const today = new Date().toISOString().split('T')[0];
-    calendar.setAttribute('min', today);
+  const today = new Date().toISOString().split('T')[0];
+calendar.setAttribute('min', today);
 
-    // Генерация плитки с временем
-    const timeSlotsContainer = document.getElementById('time-slots');
-    const selectedTimeInput = document.getElementById('selected-time');
+// Генерация плитки с временем
+const timeSlotsContainer = document.getElementById('time-slots');
+const selectedTimeInput = document.getElementById('booking_time'); // Исправление здесь
 
-    const timeSlots = [];
-    for (let hour = 12; hour <= 21; hour++) {
-        for (let minute = 0; minute < 60; minute += 30) {
-            const formattedHour = String(hour).padStart(2, '0');
-            const formattedMinute = String(minute).padStart(2, '0');
-            timeSlots.push(`${formattedHour}:${formattedMinute}`);
-        }
+const timeSlots = [];
+for (let hour = 12; hour <= 21; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+        const formattedHour = String(hour).padStart(2, '0');
+        const formattedMinute = String(minute).padStart(2, '0');
+        timeSlots.push(`${formattedHour}:${formattedMinute}`);
+    }
+}
+
+timeSlots.forEach((time) => {
+    const tile = document.createElement('div');
+    tile.className = 'time-slot';
+    tile.textContent = time;
+    tile.dataset.time = time;
+
+    tile.addEventListener('click', function () {
+    document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+    this.classList.add('selected');
+    selectedTimeInput.value = this.dataset.time; // Это важно, обновляем скрытое поле
+});
+
+
+    timeSlotsContainer.appendChild(tile);
+});
+
+// Управление состоянием блоков "в клубе/не в клубе"
+const inClubStatus = document.getElementById('in_club_status');
+inClubStatus.addEventListener('change', function () {
+    const isInClub = this.value === 'yes';
+    calendar.disabled = isInClub;
+    document.getElementById('time-slots').style.display = isInClub ? 'none' : 'grid';
+    if (isInClub) {
+        calendar.value = '';
+        selectedTimeInput.value = '';
+    }
+});
+
+// Проверка условий перед отправкой формы
+document.querySelector('form').addEventListener('submit', function (e) {
+    const quantity = document.getElementById('quantity').value;
+    const simSetup = document.getElementById('sim-setup').value;
+
+    if (simSetup === 'yes' && quantity > 2) {
+        alert('Вы не можете выбрать больше 2 мест при использовании КПП и ручника. Пожалуйста, уменьшите количество.');
+        e.preventDefault();
     }
 
-    timeSlots.forEach((time) => {
-        const tile = document.createElement('div');
-        tile.className = 'time-slot';
-        tile.textContent = time;
-        tile.dataset.time = time;
+    // Проверка на выбор времени
+    const bookingTime = selectedTimeInput.value;
+    if (!bookingTime) {
+        alert('Пожалуйста, выберите время!');
+        e.preventDefault(); // Предотвращаем отправку формы
+    }
+});
 
-        tile.addEventListener('click', function () {
-            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
-            this.classList.add('selected');
-            selectedTimeInput.value = this.dataset.time;
-        });
-
-        timeSlotsContainer.appendChild(tile);
-    });
-
-    // Управление состоянием блоков "в клубе/не в клубе"
-    const inClubStatus = document.getElementById('in_club_status');
-    inClubStatus.addEventListener('change', function () {
-        const isInClub = this.value === 'yes';
-        calendar.disabled = isInClub;
-        document.getElementById('time-slots').style.display = isInClub ? 'none' : 'grid';
-        if (isInClub) {
-            calendar.value = '';
-            selectedTimeInput.value = '';
-        }
-    });
-
-    // Проверка условий перед отправкой формы
-    document.querySelector('form').addEventListener('submit', function (e) {
-        const quantity = document.getElementById('quantity').value;
-        const simSetup = document.getElementById('sim-setup').value;
-
-        if (simSetup === 'yes' && quantity > 2) {
-            alert('Вы не можете выбрать больше 2 мест при использовании КПП и ручника. Пожалуйста, уменьшите количество.');
-            e.preventDefault();
-        }
-    });
 </script>
 
 @endsection

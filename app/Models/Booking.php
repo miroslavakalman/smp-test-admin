@@ -13,6 +13,7 @@ class Booking extends Model
         'visitor_name',
         'phone',
         'booking_date',
+        'booking_time',
         'in_club_status',
         'sim_setup',
         'quantity',
