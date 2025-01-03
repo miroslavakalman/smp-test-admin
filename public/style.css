@@ -188,3 +188,43 @@ select{
     width: 29px;
     height: 29px;
 }
+
+
+.form-columns{
+    display: flex;
+    flex-direction: row;
+    align-items:flex-start;
+    justify-content: start;
+    gap: 25%;
+}
+
+#time-slots {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); 
+    width: 80px;
+    gap: 10px;
+    margin-top: 10px;
+}
+.time-slot {
+    padding: 10px;
+    background-color: #f0f0f0;
+    color: #30384F;
+
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.time-slot:hover {
+    background-color: #6d7790;
+}
+.time-slot.selected {
+    background-color:#6d7790;
+    font-weight: bold;
+}
+
+
+input{
+    outline: none;
+}

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 
+Route::post('/check-booking', [BookingController::class, 'checkBooking']);
+
 Route::prefix('client/clubs/{club_id}/bookings')->group(function () {
     Route::get('/create', [BookingController::class, 'clientCreate'])->name('client.bookings.create');
     Route::post('/', [BookingController::class, 'clientStore'])->name('client.bookings.store');

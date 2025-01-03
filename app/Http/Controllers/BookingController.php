@@ -6,38 +6,40 @@ use App\Models\Booking;
 use App\Models\Club;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+
 class BookingController extends Controller
 {
     public function checkBookingLimit(Request $request, $clubId)
-{
-    $bookingDate = Carbon::parse($request->input('booking_date'));
-    $club = Club::find($clubId);
+    {
+        $bookingDate = Carbon::parse($request->input('booking_date'));
+        $club = Club::find($clubId);
 
-    // Check existing bookings for the same time range
-    $existingBookings = Booking::where('club_id', $clubId)
-        ->where('booking_date', $bookingDate->format('Y-m-d H:i:s'))
-        ->count();
+        // Check existing bookings for the same time range
+        $existingBookings = Booking::where('club_id', $clubId)
+            ->where('booking_date', $bookingDate->format('Y-m-d H:i:s'))
+            ->count();
 
-    if ($existingBookings >= $club->pc_count) {
-        return response()->json(['error' => 'В это время нет свободных симуляторов']);
+        if ($existingBookings >= $club->pc_count) {
+            return response()->json(['error' => 'В это время нет свободных симуляторов']);
+        }
+
+        return response()->json(['success' => 'Симуляторы доступны']);
     }
 
-    return response()->json(['success' => 'Симуляторы доступны']);
-}
     public function updateAll(Request $request, $clubId)
-{
-    $request->validate([
-        'quantity' => 'required|integer|min:1',
-        'duration' => 'required|integer|min:1',
-    ]);
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'duration' => 'required|integer|min:1',
+        ]);
 
-    Booking::where('club_id', $clubId)->update([
-        'quantity' => $request->quantity,
-        'duration' => $request->duration,
-    ]);
+        Booking::where('club_id', $clubId)->update([
+            'quantity' => $request->quantity,
+            'duration' => $request->duration,
+        ]);
 
-    return redirect()->back()->with('success', 'Изменения успешно сохранены.');
-}
+        return redirect()->back()->with('success', 'Изменения успешно сохранены.');
+    }
 
     public function index(Request $request)
     {
@@ -67,7 +69,7 @@ class BookingController extends Controller
             'selectedClub' => $selectedClub, 
         ]);
     }
-    
+
     public function show($clubId, $id)
     {
         $club = Club::findOrFail($clubId);
@@ -111,23 +113,59 @@ class BookingController extends Controller
         return redirect()->route('clubs.bookings.index', $club->id)
             ->with('success', 'Бронирование обновлено');
     }
-
-    public function store(Request $request, $club_id)
+    public function store(Request $request, $clubId)
     {
-        $club = Club::findOrFail($club_id);
-
-        $validated = $request->validate([
-            'visitor_name' => 'required|max:255',
-            'phone' => 'required',
+        // Валидация входных данных
+        $request->validate([
+            'visitor_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'in_club_status' => 'required|string|in:yes,no',
             'booking_date' => 'required|date',
-            'quantity' => 'required|integer',
-            'duration' => 'required|integer',
+            'booking_time' => 'required|date_format:H:i', // Время в формате H:i
+            'quantity' => 'required|integer|min:1',
+            'sim_setup' => 'required|string|in:yes,no',
         ]);
 
-        $club->bookings()->create($validated); 
+        // Преобразуем дату и время в один объект Carbon
+        $bookingDateTime = Carbon::parse($request->booking_date . ' ' . $request->booking_time);
 
-        return redirect()->route('clubs.bookings.index', $club_id)->with('success', 'Запись создана.');
+        // Проверяем, не пересекается ли время с существующими бронированиями
+        $existingBooking = Booking::where('club_id', $clubId)
+            ->whereDate('booking_date', $bookingDateTime->toDateString())
+            ->whereTime('booking_time', $bookingDateTime->toTimeString())
+            ->exists();
+
+        if ($existingBooking) {
+            return back()->with('error', 'Это время уже занято. Пожалуйста, выберите другое.');
+        }
+
+        // Создание нового бронирования
+        Booking::create([
+            'club_id' => $clubId,
+            'visitor_name' => $request->visitor_name,
+            'phone' => $request->phone,
+            'in_club_status' => $request->in_club_status,
+            'booking_date' => $request->booking_date,
+            'booking_time' => $request->booking_time,
+            'quantity' => $request->quantity,
+            'sim_setup' => $request->sim_setup,
+        ]);
+
+        return redirect()->route('client.bookings.index', $clubId)
+            ->with('success', 'Бронирование успешно создано.');
     }
+    public function checkBooking(Request $request)
+{
+    $bookingDate = Carbon::parse($request->input('date'));
+    $bookingTime = $request->input('time');
+
+    $existingBookings = Booking::whereDate('booking_date', $bookingDate->format('Y-m-d'))
+        ->where('booking_time', $bookingTime)
+        ->count();
+
+    return response()->json(['isOccupied' => $existingBookings > 0]);
+}
+
 
     public function create($club_id)
     {
@@ -152,7 +190,9 @@ class BookingController extends Controller
             'in_club_status' => 'required|in:yes,no',
             'quantity' => 'required|integer|min:1',
             'duration' => 'required|integer|min:1',
+            'sim_setup' => 'required|in:yes,no',
         ]);
+        
         if ($validated['in_club_status'] === 'yes') {
             $validated['booking_date'] = now();
         }
@@ -167,6 +207,4 @@ class BookingController extends Controller
         $clubs = Club::all(); 
         return view('main', compact('clubs')); 
     }
-
-
 }
